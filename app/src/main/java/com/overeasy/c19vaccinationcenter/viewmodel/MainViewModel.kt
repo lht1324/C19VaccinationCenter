@@ -21,7 +21,7 @@ class MainViewModel(application: Application) : ViewModel() {
     private val repository by lazy {
         RepositoryImpl(application)
     }
-    private val centerDatas = SingleLiveEvent<ArrayList<CenterData>>()
+    private val centerDatas = SingleLiveEvent<HashMap<String, CenterData>>()
 
     init {
         processData()
@@ -44,6 +44,8 @@ class MainViewModel(application: Application) : ViewModel() {
         .subscribeOn(Schedulers.io())
         .observeOn(Schedulers.computation())
         .map {
+            val centerDataMap = HashMap<String, CenterData>()
+
             for (i in it.indices) {
                 val centerData = it[i]
 
@@ -59,17 +61,18 @@ class MainViewModel(application: Application) : ViewModel() {
                     isHideCollidedSymbols = true
                     isHideCollidedCaptions = true
                 }
-                it[i].marker
+
+                centerDataMap[it[i].facilityName] = it[i]
             }
 
-            it
+            centerDataMap
         }
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(
             {
                 // 맵을 내보낼까?
                 // HashMap<String, CenterData>
-                centerDatas.value = ArrayList(it)
+                centerDatas.value = it
             },
             {
                 println("error: ${it.message}")

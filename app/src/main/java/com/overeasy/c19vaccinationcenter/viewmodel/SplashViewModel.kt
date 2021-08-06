@@ -81,19 +81,15 @@ class SplashViewModel(application: Application): ViewModel() {
     )
 
     private fun centerToCenterData(center: Center) = CenterData().apply {
-        id = center.id
-        centerName = center.centerName
-        centerType = center.centerType
         lat = center.lat.toDouble()
         lng = center.lng.toDouble()
+        centerType = center.centerType
+        facilityName = center.facilityName
 
         address = center.address
-        createdAt = center.createdAt
-        facilityName = center.facilityName
-        phoneNumber = center.phoneNumber
-        sido = center.phoneNumber
-        sigungu = center.sigungu
-        updatedAt = center.updatedAt
+        centerName = center.centerName
+        org = center.org
+        phoneNumber = if (center.phoneNumber.isNotEmpty()) center.phoneNumber else "없음"
         zipCode = center.zipCode
     }
 

@@ -22,12 +22,16 @@ class SplashActivity : AppCompatActivity() {
         supportActionBar!!.hide()
         viewModel.apply {
             getDownloadFinished().observe(this@SplashActivity, {
-                println("Download in SplashActivity is finished.")
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                 finish()
             })
             downloadDatas()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("onDestroy() of SplashActivity.")
     }
 
     private fun println(data: String) = Log.d("SplashActivity", data)

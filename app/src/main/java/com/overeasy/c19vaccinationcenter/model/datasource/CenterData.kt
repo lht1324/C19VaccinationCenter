@@ -8,7 +8,6 @@ import com.overeasy.c19vaccinationcenter.model.datasource.pojo.Center
 
 @Entity(tableName = "centerTable", primaryKeys = ["centerType", "facilityName"])
 class CenterData {
-    var id = 0
     var lat = 0.0 //
     var lng = 0.0 //
     var centerType = "" //
@@ -16,11 +15,8 @@ class CenterData {
 
     var address = ""
     var centerName = ""
-    var createdAt = ""
+    var org = ""
     var phoneNumber = ""
-    var sido = ""
-    var sigungu = ""
-    var updatedAt = ""
     var zipCode = ""
 
     @Ignore
