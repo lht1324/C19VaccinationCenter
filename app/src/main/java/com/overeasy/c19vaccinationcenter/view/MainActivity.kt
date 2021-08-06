@@ -15,7 +15,7 @@ import com.overeasy.c19vaccinationcenter.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var naverMap: NaverMap
+    // private var naverMap: NaverMap? = null
     private val mapFragment by lazy {
         MapFragment.newInstance().also {
             supportFragmentManager
@@ -33,21 +33,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.getCenterDatas().observe(this, {
+        mapFragment.getMapAsync(this)
+        /* viewModel.getCenterDatas().observe(this, {
             val iterator = it.iterator()
 
-            while(iterator.hasNext())
-                iterator.next().marker!!.map = naverMap
-        })
+            while(iterator.hasNext()) {
+                val centerData = iterator.next()
+                println("centerData[${centerData.id - 1}] = ${centerData.facilityName}")
+                centerData.marker!!.map = naverMap
+            }
+        }) */
 
-        mapFragment.getMapAsync(this)
+        // mapFragment.getMapAsync(this)
     }
 
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
-        this.naverMap = naverMap
+        // this.naverMap = naverMap
 
         naverMap.mapType = NaverMap.MapType.Navi
+
+        viewModel.getCenterDatas().observe(this, {
+            val iterator = it.iterator()
+
+            while(iterator.hasNext()) {
+                val centerData = iterator.next()
+                println("centerData[${centerData.id - 1}] = ${centerData.facilityName}")
+                centerData.marker!!.map = naverMap
+            }
+        })
     }
 
     private fun println(data: String) = Log.d("MainActivity", data)

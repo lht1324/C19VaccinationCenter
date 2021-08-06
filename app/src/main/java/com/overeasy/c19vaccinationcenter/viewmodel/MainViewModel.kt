@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
-import com.overeasy.c19vaccinationcenter.model.repository.RepositoryImpl
 import com.overeasy.c19vaccinationcenter.model.datasource.CenterData
+import com.overeasy.c19vaccinationcenter.model.repository.RepositoryImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -22,6 +22,10 @@ class MainViewModel(application: Application) : ViewModel() {
         RepositoryImpl(application)
     }
     private val centerDatas = SingleLiveEvent<ArrayList<CenterData>>()
+
+    init {
+        processData()
+    }
 
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -38,7 +42,7 @@ class MainViewModel(application: Application) : ViewModel() {
 
     private fun processData() = compositeDisposable.add(repository.getSavedCenterDatas()
         .subscribeOn(Schedulers.io())
-        .observeOn(Schedulers.io())
+        .observeOn(Schedulers.computation())
         .map {
             for (i in it.indices) {
                 val centerData = it[i]
@@ -50,9 +54,12 @@ class MainViewModel(application: Application) : ViewModel() {
                     captionText = centerData.facilityName
                     icon = MarkerIcons.BLACK
                     iconTintColor = Color.parseColor(if (centerData.centerType == "지역") "#4AE18E" else "#008000")
-                    captionMinZoom = 9.5
+                    captionMinZoom = 9.0
                     zIndex = if (centerData.centerType == "지역") 0 else 100
+                    isHideCollidedSymbols = true
+                    isHideCollidedCaptions = true
                 }
+                it[i].marker
             }
 
             it

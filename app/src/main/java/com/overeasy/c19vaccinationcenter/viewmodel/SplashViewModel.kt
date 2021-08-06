@@ -2,12 +2,11 @@ package com.overeasy.c19vaccinationcenter.viewmodel
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.overeasy.c19vaccinationcenter.model.datasource.CenterData
 import com.overeasy.c19vaccinationcenter.model.repository.RepositoryImpl
 import com.overeasy.c19vaccinationcenter.model.datasource.pojo.Center
-import com.overeasy.c19vaccinationcenter.model.datasource.CenterData
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +21,6 @@ class SplashViewModel(application: Application): ViewModel() {
         RepositoryImpl(application)
     }
     private val downloadFinished = SingleLiveEvent<Void>()
-    private val centerDatas = MutableLiveData<ArrayList<CenterData>>()
 
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -51,24 +49,18 @@ class SplashViewModel(application: Application): ViewModel() {
             it.body()!!.data
         }.toList()
         .map {
-            val tempList = ArrayList<Center>()
+            val resultList = ArrayList<Center>()
 
-            for (i in it)
-                tempList.addAll(i)
+            it.forEach { centerList -> resultList.addAll(centerList) }
 
-            tempList
+            resultList
         }
         .observeOn(Schedulers.computation())
         .map {
             val resultList = ArrayList<CenterData>()
 
-            for (i in it.indices) {
-                resultList.add(CenterData().apply {
-                    lat = it[i].lat.toDouble()
-                    lng = it[i].lng.toDouble()
-                    centerType = it[i].centerType
-                    facilityName = it[i].facilityName
-                })
+            it.forEach { center ->
+                resultList.add(centerToCenterData(center))
             }
 
             resultList
@@ -83,10 +75,27 @@ class SplashViewModel(application: Application): ViewModel() {
                 downloadFinished.call()
             },
             {
-                println("error: ${it.message}")
+                println("error in getAndProcessData(): ${it.message}")
             }
         )
     )
+
+    private fun centerToCenterData(center: Center) = CenterData().apply {
+        id = center.id
+        centerName = center.centerName
+        centerType = center.centerType
+        lat = center.lat.toDouble()
+        lng = center.lng.toDouble()
+
+        address = center.address
+        createdAt = center.createdAt
+        facilityName = center.facilityName
+        phoneNumber = center.phoneNumber
+        sido = center.phoneNumber
+        sigungu = center.sigungu
+        updatedAt = center.updatedAt
+        zipCode = center.zipCode
+    }
 
     private fun insertAll(centerDatas: List<CenterData>) = repository.insertAll(centerDatas)
 

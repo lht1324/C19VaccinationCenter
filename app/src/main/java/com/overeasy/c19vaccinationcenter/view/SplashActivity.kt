@@ -2,6 +2,7 @@ package com.overeasy.c19vaccinationcenter.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.overeasy.c19vaccinationcenter.databinding.ActivitySplashBinding
@@ -18,12 +19,16 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar!!.hide()
         viewModel.apply {
             getDownloadFinished().observe(this@SplashActivity, {
+                println("Download in SplashActivity is finished.")
                 startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                 finish()
             })
             downloadDatas()
         }
     }
+
+    private fun println(data: String) = Log.d("SplashActivity", data)
 }

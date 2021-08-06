@@ -26,7 +26,7 @@ class Client {
         .baseUrl(baseUrl)
         .addCallAdapterFactory((RxJava2CallAdapterFactory.create()))
         .addConverterFactory(GsonConverterFactory.create())
-        .client(clientBuilder.build())
+        // .client(clientBuilder.build())
         .build()
         .create(RetrofitService::class.java)
 
