@@ -22,12 +22,17 @@ class SplashViewModel(application: Application): ViewModel() {
     }
     private val downloadFinished = SingleLiveEvent<Void>()
 
+    init {
+        getAndProcessDatas()
+    }
+
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             return SplashViewModel(application) as T
         }
     }
 
+    // 뷰모델 제거 시 메모리 누수 방지를 위해 compositeDisposable.dispose()를 실행해 메모리 참조를 해제한다
     override fun onCleared() {
         compositeDisposable.dispose()
         super.onCleared()
@@ -35,14 +40,13 @@ class SplashViewModel(application: Application): ViewModel() {
 
     fun getDownloadFinished() = downloadFinished
 
-    fun downloadDatas() = getAndProcessDatas()
-
     private fun getAndProcessDatas() = compositeDisposable.add(Observable.range(1, 10)
         .subscribeOn(Schedulers.io())
         .observeOn(Schedulers.io())
         .map {
             repository.getCentersData(it)
         }
+        .observeOn(Schedulers.computation())
         .mergeAll()
         .map {
             // Response<Centers>를 여러 개 통지하는 하나의 Observable
@@ -51,11 +55,12 @@ class SplashViewModel(application: Application): ViewModel() {
         .map {
             val resultList = ArrayList<Center>()
 
-            it.forEach { centerList -> resultList.addAll(centerList) }
+            it.forEach { centerList ->
+                resultList.addAll(centerList)
+            }
 
             resultList
         }
-        .observeOn(Schedulers.computation())
         .map {
             val resultList = ArrayList<CenterData>()
 
@@ -75,7 +80,7 @@ class SplashViewModel(application: Application): ViewModel() {
                 downloadFinished.call()
             },
             {
-                println("error in getAndProcessData(): ${it.message}")
+                println("error in getAndProcessData() of SplashViewModel: ${it.message}")
             }
         )
     )

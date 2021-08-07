@@ -4,12 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.overeasy.c19vaccinationcenter.model.datasource.pojo.Center
 import io.reactivex.Single
 
 @Dao
 interface VCenterDao {
-    @Query("Select * from centerTable")
+    @Query("Select * from centerDataTable")
     fun getCenterDatas(): Single<List<CenterData>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -23,9 +23,9 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/button_shape"
-        android:text="\?"
+        android:text="@string/help"
         android:textColor="#000000"
-        android:textSize="20sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,7 +36,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/button_shape"
-        android:text="지도\n초기화"
+        android:text="@string/initMap"
         android:textColor="#000000"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@id/helpButton"

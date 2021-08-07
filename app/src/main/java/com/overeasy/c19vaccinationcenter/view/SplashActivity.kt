@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.overeasy.c19vaccinationcenter.R
-import com.overeasy.c19vaccinationcenter.databinding.ActivitySplashBinding
 import com.overeasy.c19vaccinationcenter.viewmodel.SplashViewModel
 
 class SplashActivity : AppCompatActivity() {
@@ -18,13 +17,10 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        viewModel.apply {
-            getDownloadFinished().observe(this@SplashActivity, {
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-                finish()
-            })
-            downloadDatas()
-        }
+        viewModel.getDownloadFinished().observe(this, {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        })
     }
 
     private fun println(data: String) = Log.d("SplashActivity", data)
