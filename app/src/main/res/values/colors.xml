@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#FF008000</color>
     <color name="light_green">#FF4AE18E</color>
+    <color name="background_splash">#FF70EE70</color>
 </resources>
