@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private val mapFragment by lazy {
         MapFragment.newInstance(
             NaverMapOptions()
-                .camera(CameraPosition(LatLng(36.0, 127.83), 5.7))
-                .mapType(NaverMap.MapType.Navi)
-                .zoomControlEnabled(false)
+                .camera(CameraPosition(LatLng(36.0, 127.83), 5.7)) // 앱의 첫 실행시 시점을 남한 전체로 고정
+                .mapType(NaverMap.MapType.Navi) // 지도의 유형 설정
+                .zoomControlEnabled(false) // 줌 버튼의 위치 변경을 위해 기본 줌 버튼을 비활성화한다.
         ).also {
             supportFragmentManager
                 .beginTransaction()
@@ -43,12 +43,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // 비동기로 NaverMap 객체를 얻는다. NaverMap 객체가 준비되면 onMapReady() 메서드가 호출된다.
         mapFragment.getMapAsync(this)
 
-        // '도움말' 버튼이 클릭되면 HelpDialog를 연다
+        // '도움말' 버튼이 클릭되면 HelpDialog를 연다.
         binding.helpButton.clicks().subscribe {
             HelpDialog(this@MainActivity).show()
         }
     }
 
+    // 뒤로 가기 버튼을 2초 안에 1번 더 눌러야 종료되게 하는 메서드
     override fun onBackPressed() {
         if (System.currentTimeMillis() - backPressedLast < 2000) {
             finish()
@@ -60,10 +61,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         backPressedLast = System.currentTimeMillis()
     }
 
+    // mapFragment.getMapAsync() 메서드 실행 후 NaverMap 객체가 준비되면 호출된다.
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
         binding.apply {
+            // 임의로 지정한 줌 버튼의 map 속성에 naverMap을 삽입한다.
             zoom.map = naverMap
+
+            // 초기화 버튼을 누르면 앱을 처음 시작했을 때 나온 시점으로 이동한다.
             initButton.clicks().subscribe {
                 naverMap.moveCamera(
                     CameraUpdate
@@ -72,15 +77,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 )
             }
         }
+        // 보이는 부분을 한반도로 고정한다
         naverMap.extent = LatLngBounds(LatLng(31.43, 122.37), LatLng(44.35, 132.0))
 
+        /*
+        MainViewModel의 SingleLiveEvent centerDatas의 데이터 변경 여부를 관찰한다.
+        데이터가 변경되면 centerData.marker의 OnClickListener를 설정하고 map 속성을 지정한다.
+        */
         viewModel.getCenterDatas().observe(this, {
             val iterator = it.iterator()
 
             while(iterator.hasNext()) {
                 val centerData = iterator.next()
 
-                centerData!!.marker!!.apply {
+                centerData.marker!!.apply {
+                    // 마커 터치 시 마커가 가리키는 센터의 정보를 Toast로 출력한다.
                     setOnClickListener {
                         showLongToast("센터명: ${centerData.centerName}\n" +
                                 "센터 구분: ${centerData.centerType}\n" +
@@ -91,14 +102,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         true
                     }
+
+                    // 기본적인 정보만 들어있던 마커에 map 속성을 지정해준다.
                     map = naverMap
                 }
             }
         })
     }
 
+    // 로그 확인용
     private fun println(data: String) = Log.d("MainActivity", data)
 
+    // Toast 출력용
     private fun showShortToast(data: String) = Toast.makeText(this, data, Toast.LENGTH_SHORT).show()
 
     private fun showLongToast(data: String) = Toast.makeText(this, data, Toast.LENGTH_LONG).show()

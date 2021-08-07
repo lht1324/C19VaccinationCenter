@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import java.util.concurrent.atomic.AtomicBoolean
 
+// LiveData 사용 중 lifecycleOwner의 생명주기에 따라 중복 관찰되는 문제를 해결하기 위해 사용
 class SingleLiveEvent<T> : MutableLiveData<T>() {
     private val mPending = AtomicBoolean(false)
 
@@ -15,7 +16,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
         if (hasActiveObservers())
             println("Multiple observers registered but only one will be notified of changes.")
 
-        super.observe(owner, Observer {
+        super.observe(owner, {
             if (mPending.compareAndSet(true, false))
                 observer.onChanged(it)
         })

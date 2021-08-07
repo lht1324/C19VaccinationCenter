@@ -16,12 +16,16 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
+        /*
+        SplashViewModel의 SingleLiveEvent downloadFinished의 데이터 변경을 관찰한다.
+        데이터가 변경되면 MainActivity를 연 뒤 SplashActivity를 종료한다.
+        */
         viewModel.getDownloadFinished().observe(this, {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         })
     }
 
+    // 로그 확인용
     private fun println(data: String) = Log.d("SplashActivity", data)
 }

@@ -9,6 +9,7 @@ import com.jakewharton.rxbinding4.view.clicks
 import com.overeasy.c19vaccinationcenter.R
 import com.overeasy.c19vaccinationcenter.databinding.DialogHelpBinding
 
+// '도움말' 버튼을 터치했을 때 열리는 다이얼로그
 class HelpDialog(private val mContext: Context) : Dialog(mContext) {
     private lateinit var binding: DialogHelpBinding
 
@@ -23,14 +24,9 @@ class HelpDialog(private val mContext: Context) : Dialog(mContext) {
     }
 
     private fun init() {
-        val layoutParams = WindowManager.LayoutParams().apply {
-            width = WindowManager.LayoutParams.WRAP_CONTENT
-            height = WindowManager.LayoutParams.WRAP_CONTENT
-            flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
-            dimAmount = 0.5f
-        }
-        window!!.attributes = layoutParams
+        setCancelable(true)
 
+        // textView2(마커), textView3(지도 초기화)를 클릭했을 때의 동작을 정의한다.
         binding.apply {
             textView2.clicks().subscribe {
                 showAlertDialog(R.string.marker, R.string.markerHelp)
